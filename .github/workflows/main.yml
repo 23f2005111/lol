@@ -1,33 +1,38 @@
-name: matrix-multi-platform
+name: Multi-Platform Matrix Build with Artifacts
 
 on:
   push:
-  workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
+    # Define a matrix with three Node.js versions as variants
     strategy:
       matrix:
-        version: [14, 16, 18]
+        node-version: [14, 16, 18]
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: matrix-d6eb3f0
-        run: echo "Building for version ${{ matrix.version }}"
-
-      - name: Setup Node
+      - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.version }}
+          node-version: ${{ matrix.node-version }}
+
+      - name: matrix-289b717
+        run: echo "Building for Node.js version ${{ matrix.node-version }}"
 
       - name: Generate build artifact
-        run: echo "Build output for version ${{ matrix.version }}" > output-${{ matrix.version }}.txt
+        run: |
+          echo "Build output for Node.js version ${{ matrix.node-version }}" > build_output_${{ matrix.node-version }}.txt
+          echo "Timestamp: $(date)" >> build_output_${{ matrix.node-version }}.txt
+          echo "Matrix variant: ${{ matrix.node-version }}" >> build_output_${{ matrix.node-version }}.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-d6eb3f0-v${{ matrix.version }}
-          path: output-${{ matrix.version }}.txt
+          name: build-289b717-v${{ matrix.node-version }}
+          path: build_output_${{ matrix.node-version }}.txt
